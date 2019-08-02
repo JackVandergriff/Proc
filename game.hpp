@@ -5,10 +5,12 @@
 #include <SFML/Audio.hpp>
 #include <SFML/System.hpp>
 
+
 class Game {
     private:
         sf::RenderWindow *window;
         sf::Event event;
+		sf::CircleShape shape;
 
         void initWindow();
 

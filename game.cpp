@@ -8,6 +8,8 @@ void Game::initWindow() {
 
 Game::Game() {
     this->initWindow();
+	this->shape = sf::CircleShape(100.0f);
+	this->shape.setFillColor(sf::Color::Green);
 }
 
 Game::~Game() {
@@ -17,7 +19,7 @@ Game::~Game() {
 // Main game functions
 
 void Game::render() {
-
+	this->window->draw(this->shape);
 }
 
 void Game::main() {
