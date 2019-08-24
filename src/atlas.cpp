@@ -35,6 +35,10 @@ void Atlas::getSprite(sf::Sprite *sprite, string name) {
     sprite->setTextureRect((*lookup)[name]);
 }
 
+sf::IntRect Atlas::getRect(string name) {
+    return (*lookup)[name];
+}
+
 sf::IntRect Atlas::findFreeRect(int w, int h) {
     for (int y=0; y <= this->dimensions.y - h; y++) {
         for (int x=0; x <= this->dimensions.x - w; x++) {

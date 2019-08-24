@@ -6,7 +6,7 @@
 #include <SFML/System.hpp>
 #include <string>
 
-#include "atlas.hpp"
+#include "tilemap.hpp"
 
 using namespace std;
 
@@ -25,11 +25,12 @@ class Game {
         // Main game functions
         void main();
         void update();
-        void render(sf::Sprite*);
+        void render();
         void SFMLUpdate();
         void drawSpriteArray();
 
-        Atlas atlas;
+        Atlas* atlas = new Atlas();
+        TileMap* tilemap = new TileMap();
 };
 
 void LoadSprites(Game);

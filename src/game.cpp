@@ -4,6 +4,7 @@
 
 void Game::initWindow() {
     this->window = new sf::RenderWindow(sf::VideoMode(800, 600), "/Proc/");
+    tilemap->atlas = atlas;
 }
 
 Game::Game() {
@@ -18,19 +19,19 @@ Game::~Game() {
 
 // Main game functions
 
-void Game::render(sf::Sprite* IC) {
-    this->window->draw(*IC);
+void Game::render() {
+    this->window->draw(*tilemap);
 }
 
 void Game::main() {
-    sf::Sprite *IC = new sf::Sprite;
-    this->atlas.getSprite(IC, "555");
-    IC->setPosition(50, 50);
-    IC->setScale(2, 2);
+    tilemap->addTile("7400", vector2(0, 0));
+    tilemap->addTile("74133", vector2(80, 140));
+    tilemap->setPosition(50, 50);
+    tilemap->setScale(2, 2);
     while (this->window->isOpen()) {
         this->update();
         this->window->clear();
-        this->render(IC);
+        this->render();
         this->window->display();
     }
 }
