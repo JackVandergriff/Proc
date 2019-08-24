@@ -25,7 +25,7 @@ class Game {
         // Main game functions
         void main();
         void update();
-        void render();
+        void render(sf::Sprite*);
         void SFMLUpdate();
         void drawSpriteArray();
 

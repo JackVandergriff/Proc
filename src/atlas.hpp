@@ -3,6 +3,7 @@
 #include <SFML/Graphics.hpp>
 #include <string>
 #include <unordered_map>
+#include <unordered_set>
 #include "utility.hpp"
 
 using namespace std;
@@ -10,11 +11,11 @@ using namespace std;
 class Atlas {
     private:
         const int size = 32;
-        unordered_map<string, vector2> lookup;
-
-        vector2 nextPos = {0, 0};
+        unordered_map<string, sf::IntRect> *lookup = new unordered_map<string, sf::IntRect>;
+        unordered_set<vector2> taken;
         vector2 dimensions;
-        void getNextPos();
+
+        sf::IntRect findFreeRect(int, int);
     public:
         Atlas(int, int);
         Atlas();
