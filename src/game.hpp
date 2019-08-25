@@ -15,6 +15,7 @@ class Game {
         sf::RenderWindow *window;
         sf::Event event;
 		sf::CircleShape shape;
+        vector<sf::Drawable*> drawables;
 
         void initWindow();
 
@@ -30,7 +31,7 @@ class Game {
         void drawSpriteArray();
 
         Atlas* atlas = new Atlas();
-        TileMap* tilemap = new TileMap();
+        TileMap* tilemap = new TileMap(atlas);
 };
 
 void LoadSprites(Game);

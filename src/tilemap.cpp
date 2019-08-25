@@ -1,9 +1,9 @@
 #include "tilemap.hpp"
 
-// TileMap::TileMap(Atlas* new_atlas) : sf::Drawable(), sf::Transformable() {
-//     atlas = new_atlas;
-//     vertices.setPrimitiveType(sf::Quads);
-// }
+TileMap::TileMap(Atlas* new_atlas) : sf::Drawable(), sf::Transformable() {
+    atlas = new_atlas;
+    vertices.setPrimitiveType(sf::Quads);
+}
 
 void TileMap::addTile(string name, vector2 location) {
     vertices.setPrimitiveType(sf::Quads);

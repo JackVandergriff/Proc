@@ -20,14 +20,18 @@ Game::~Game() {
 // Main game functions
 
 void Game::render() {
-    this->window->draw(*tilemap);
+    for (auto item : drawables) {
+        this->window->draw(*item);
+    }
 }
 
 void Game::main() {
-    tilemap->addTile("7400", vector2(0, 0));
+    tilemap->addTile("555", vector2(0, 0));
+    tilemap->addTile("7400", vector2(37, 49));
     tilemap->addTile("74133", vector2(80, 140));
     tilemap->setPosition(50, 50);
     tilemap->setScale(2, 2);
+    drawables.push_back(tilemap);
     while (this->window->isOpen()) {
         this->update();
         this->window->clear();

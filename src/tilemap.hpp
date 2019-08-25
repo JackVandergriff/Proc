@@ -13,6 +13,7 @@ class TileMap : public sf::Drawable, public sf::Transformable {
         sf::VertexArray vertices;
         virtual void draw(sf::RenderTarget&, sf::RenderStates) const;
     public:
+        TileMap(Atlas*);
         void addTile(string, vector2);
         Atlas* atlas;
 };
