@@ -1,16 +1,17 @@
 #include "game.hpp"
 
+#define KEYDOWN(x) (sf::Keyboard::isKeyPressed(sf::Keyboard::x))
+
 // Initializers
 
 void Game::initWindow() {
     this->window = new sf::RenderWindow(sf::VideoMode(800, 600), "/Proc/");
+    this->window->setView(this->view);
     tilemap->atlas = atlas;
 }
 
 Game::Game() {
     this->initWindow();
-	this->shape = sf::CircleShape(100.0f);
-	this->shape.setFillColor(sf::Color::Green);
 }
 
 Game::~Game() {
@@ -33,6 +34,7 @@ void Game::main() {
     tilemap->setScale(2, 2);
     drawables.push_back(tilemap);
     while (this->window->isOpen()) {
+        this->processInput();
         this->update();
         this->window->clear();
         this->render();
@@ -41,6 +43,7 @@ void Game::main() {
 }
 
 void Game::update() {
+    deltaTime = clock.restart().asMicroseconds();
     this->SFMLUpdate();
 }
 
@@ -48,5 +51,26 @@ void Game::SFMLUpdate() {
     while (this->window->pollEvent(this->event)) {
         if (this->event.type == sf::Event::Closed)
             this->window->close();
+        if (event.type == sf::Event::Resized) {
+            // update the view to the new size of the window
+            this->view.setSize(event.size.width, event.size.height);
+            this->window->setView(this->view);
+        }
     }
+}
+
+void Game::processInput() {
+    float msdt = moveSpeed * deltaTime;
+
+    if (KEYDOWN(W)) {
+        view.move(0, -msdt);
+    } else if (KEYDOWN(S)) {
+        view.move(0, msdt);
+    } if (KEYDOWN(A)) {
+        view.move(-msdt, 0);
+    } else if (KEYDOWN(D)) {
+        view.move(msdt, 0);
+    }
+
+    window->setView(view);
 }
