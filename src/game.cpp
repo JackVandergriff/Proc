@@ -27,9 +27,11 @@ void Game::render() {
 }
 
 void Game::main() {
-    tilemap->addTile("555", vector2(0, 0));
-    tilemap->addTile("7400", vector2(37, 49));
-    tilemap->addTile("74133", vector2(80, 140));
+    tilemap->addTile("555", ~vector2(0, 0));
+    tilemap->addTile("7400", ~vector2(0, 4));
+    tilemap->addTile("74133", ~vector2(0, 8));
+    tilemap->addTile("2n2222", ~vector2(-8, 0));
+    tilemap->addTile("bread", ~vector2(-8, -8));
     tilemap->setPosition(50, 50);
     tilemap->setScale(2, 2);
     drawables.push_back(tilemap);

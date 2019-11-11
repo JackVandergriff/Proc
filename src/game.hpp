@@ -7,6 +7,7 @@
 #include <string>
 
 #include "tilemap.hpp"
+#include "config.hpp"
 
 using namespace std;
 
