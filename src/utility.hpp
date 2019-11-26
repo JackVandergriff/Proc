@@ -1,6 +1,11 @@
 #pragma once
 
 #include <string>
+#include <sstream>
+#include <algorithm>
+#include <iterator>
+#include <vector>
+
 using std::string;
 
 const string ROOT_PATH("/home/jack/Documents/Proc/");
@@ -33,6 +38,10 @@ namespace std {
             /* combine two lower halves of x and y components */
         }
     };
+};
+
+namespace Utility {
+    std::vector<string> split_str(const std::string&, char);
 };
 
 // sf::FloatRect& operator+=(sf::FloatRect &left, sf::Vector2f &right) {
