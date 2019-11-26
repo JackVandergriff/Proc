@@ -1,5 +1,7 @@
 #pragma once
 
+#include "utility.h"
+
 typedef struct vector2{
     int x = 0;
     int y = 0;

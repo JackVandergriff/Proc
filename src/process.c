@@ -4,44 +4,51 @@ extern "C" {
 
 #include "process.h"
 
-void initializeNode(Node *n, Gates gate, bool analog, unsigned char startVal) {
-    n->type = (gate << 1) | analog;
-    n->value = startVal;
-}
-
-void updateNode(Node *n) {
-    if (_AD(n) == 0) {
-        switch (_TYPE(n)) {
-            case OR:
-                n->value = n->input1->value | n->input2->value;
-                break;
-            case AND:
-                n->value = n->input1->value & n->input2->value;
-                break;
-            case XOR:
-                n->value = n->input1->value ^ n->input2->value;
-                break;
-            case NOT:
-                n->value = ~n->input1->value & 1;
-                break;
-            case LATCH:
-                if (n->input1->value > 0) n->value = n->input2->value; 
-            default:
-                break;
-        }
+int16_t makeEntry(Pageref* pr, int16_t entry) {
+    if (pr->current.entries[0] == 0) {
+        pr->current.entries[0] = entry;
+    } else if (pr->current.entries[1] == 0) {
+        pr->current.entries[1] = entry;
+    } else if (pr->current.entries[2] == 0) {
+        pr->current.entries[2] = entry;
+    } else if (pr->current.entries[3] == 0) {
+        pr->current.entries[3] = entry;
+        Sector page_out;
+        page_out.page = pr->current;
+        memset(pr->current.entries, 0, sizeof(pr->current.entries));
+        pr->ref[pr->pages + 1 + pr->ref[0].header.buffers] = page_out;
+        pr->pages++;
+        assert(pr->pages < pr->ref[0].header.pages);
+    } else {
+        printf("NOPE\n");
+        assert(false);
     }
 }
 
-Node* nalloc(int size) {
-    return (Node*) calloc(size, sizeof(Node));
+Pageref createPageref(long IOR_map, int buffers) {
+    Pageref pr;
+    int sectors = pow(2, GETINPUTLEN(IOR_map)) / 4;
+    pr.IOR_map = IOR_map;
+    pr.max_pages = sectors;
+    pr.pages = 0;
+    pr.ref = malloc(sizeof(Sector) * (sectors + buffers + 2));
+    memset(pr.current.entries, 0, sizeof(pr.current.entries));
+    Sector header_out;
+    header_out.header.pages = sectors;
+    header_out.header.buffers = buffers;
+    pr.ref[0] = header_out;
+    return pr;
 }
 
-void swap(Node *n1, Node *n2) {
-    Node tmp = *n2;
-    *n2 = *n1;
-    *n1 = tmp;
+int main() {
+    Pageref p = createPageref(4L, 0);
+    makeEntry(&p, 0b0000);
+    makeEntry(&p, 0b0001);
+    makeEntry(&p, 0b0010);
+    makeEntry(&p, 0b0011);
+    return 0;
 }
 
 #ifdef __cplusplus
-extern "C" {
+}
 #endif
