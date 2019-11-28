@@ -18,30 +18,26 @@ extern "C" {
 
 // #define DEBUG
 
-#define GETINPUTLEN(x)     ((x) & 0b1111)
-#define GETOUTPUTLEN(x)    (((x) >> 4) & 0b1111)
-#define GETOUTPUTROLL(x)   (((x) >> 12)& 0b1111)
-#define GETREGISTERLEN(x)  (((x) >> 16)& 0b1111)
-#define GETREGISTERROLL(x) (((x) >> 20)& 0b1111)
-
 struct header {
-    int8_t pages;
-    int16_t current;
+    int8_t current;
     int8_t buffers;
     int8_t current_buffer;
-    // int8_t pad[5];
+    int8_t input_mask;
+    int8_t output_mask;
+    int8_t register_mask;
+    int8_t register_roll;
 } typedef Header;
 
 struct page {
-    int16_t entries[4];
+    int8_t entries[8];
 } typedef Page;
 
 struct buffer_page {
-    int16_t entries[4];
+    int8_t entries[8];
 } typedef BufferPage;
 
 struct footer {
-    void* ref;
+    union sector* ref;
     int8_t pad[8 - sizeof(void*)/sizeof(int8_t)];
 } typedef Footer;
 
@@ -52,16 +48,10 @@ union sector {
     BufferPage buffer_page;
 } typedef Sector;
 
-struct pageref {
-    long IOR_map;
-    int pages;
-    int max_pages;
-    Page current;
-    Sector* ref;
-} typedef Pageref;
-
-int16_t makeEntry(Pageref*, int16_t);
-Pageref createPageref(long, int);
+char getRoll(int8_t);
+Sector* createBlock(int8_t, int8_t, int8_t, int8_t);
+void makeEntry(Sector*, int8_t, int8_t);
+int8_t __always_inline lookup(Sector*, int8_t);
 
 #endif
 
