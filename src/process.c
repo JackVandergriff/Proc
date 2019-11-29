@@ -17,21 +17,23 @@ void makeEntry(Sector* block, int8_t inputs, int8_t outputs) {
 }
 
 Sector* createBlock(int8_t inputs, int8_t outputs, int8_t registers, int8_t buffers) {
-    int sectors = (1 << (inputs + registers))/8; // if 4 inputs/registers, then 16 entries (1 << 4), so 2 pages 
-    Sector* block = malloc(sizeof(Sector) * (sectors + buffers + 2));
-    block[0].header.buffers = buffers;
-    block[0].header.input_mask = (1 << inputs) - 1;
-    block[0].header.register_mask = (1 << registers) - 1;
-    block[0].header.output_mask = ((1 << (registers + outputs)) - 1) ^ ((1 << registers) - 1);
-    block[0].header.register_roll = inputs; 
-    // imagine 3 inputs, one register, to get register then inputs need to roll left past input mask
+    int sectors = (1 << (inputs + registers))/8;                        // if 4 inputs/registers, then 16 entries (1 << 4), so 2 pages 
+    Sector* block = malloc(sizeof(Sector) * (sectors + buffers + 2));   // Header, footer, buffers, and pages
+    block[0].header.buffers = buffers;                                  // block[0] will always be header
+    block[0].header.input_mask = (1 << inputs) - 1;                     // fill in ex. 0b0111 with ones by 0b1000 - 1
+    block[0].header.register_mask = (1 << registers) - 1;               // Same for registers
+    block[0].header.output_mask =                                       // Output mask sits left of register mask, so
+        ((1 << (registers + outputs)) - 1) ^ ((1 << registers) - 1);    // grab full mask and remove register portion
+    block[0].header.register_roll = inputs;                             // To roll register past inputs, must go left by inputs
     return block;
 }
 
 int8_t __always_inline lookup(Sector* block, int8_t inputs) {
     Header header = block[0].header;
-    int8_t entry_num = ((header.current & header.register_mask) << header.register_roll) | inputs;
-    return (block[1 + header.buffers + entry_num/8].page.entries[entry_num % 8]);
+    int8_t entry_num = ((header.current & header.register_mask)         // Grab register portion of current data
+        << header.register_roll) | inputs;                              // Roll left past inputs and add input data in
+    return (block[1 + header.buffers                                    // Skip header and buffers to find start of table
+        + entry_num/8].page.entries[entry_num % 8]);                    // 8 entries per sector, so grab floor and use remainder as index
 }
 
 int main() {
