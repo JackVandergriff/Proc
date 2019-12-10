@@ -12,8 +12,17 @@ char getRoll(int8_t mask) { // Example mask 0b1111
     return i;
 }
 
-void makeEntry(Sector* block, int8_t inputs, int8_t outputs) {
+void makeEntry_raw(Sector* block, int8_t inputs, int8_t outputs) {
     block[1 + block[0].header.buffers + inputs/8].page.entries[inputs % 8] = outputs;
+}
+
+void makeEntry(Sector* block, int8_t inputs, int8_t input_registers, int8_t outputs, int8_t output_registers) {
+    Header header = block[0].header;
+    makeEntry_raw(
+        block, 
+        inputs | (input_registers << header.register_roll),             // roll registers above inputs
+        output_registers | (outputs << getRoll(header.register_mask))   // roll outputs above registers
+    );
 }
 
 Sector* createBlock(int8_t inputs, int8_t outputs, int8_t registers, int8_t buffers) {
@@ -36,19 +45,29 @@ int8_t __always_inline lookup(Sector* block, int8_t inputs) {
         + entry_num/8].page.entries[entry_num % 8]);                    // 8 entries per sector, so grab floor and use remainder as index
 }
 
+int8_t __always_inline lookup_and_buffer(Sector* block, int8_t inputs) {
+    Header* header = ((Header*) block);
+    header->current = lookup(block, inputs);
+    block[1 + header->buffer_index/8].buffer_page.entries[header->buffer_index % 8] = header->current;
+    header->buffer_index++;
+    return header->current;
+}
+
 int main() {
     char line[100];
     int8_t input;
     int8_t cur;
-    Sector* block = createBlock(2, 2, 1, 0);
-    makeEntry(block, 0x00, 0x01);
-    makeEntry(block, 0x01, 0x02);
-    makeEntry(block, 0x02, 0x04);
-    makeEntry(block, 0x03, 0x06);
-    makeEntry(block, 0x04, 0x00);
-    makeEntry(block, 0x05, 0x05);
-    makeEntry(block, 0x06, 0x03);
-    makeEntry(block, 0x07, 0x01);
+    Sector* block = createBlock(2, 2, 1, 2);
+    printf("%i\n", getRoll(block[0].header.input_mask));
+    // Inputs: J K, outputs: Q ~Q, register Q
+    makeEntry(block, 0b00, 0b0, 0b01, 0b0);
+    makeEntry(block, 0b01, 0b0, 0b01, 0b0);
+    makeEntry(block, 0b10, 0b0, 0b10, 0b1);
+    makeEntry(block, 0b11, 0b0, 0b10, 0b1);
+    makeEntry(block, 0b00, 0b1, 0b10, 0b1);
+    makeEntry(block, 0b01, 0b1, 0b01, 0b0);
+    makeEntry(block, 0b10, 0b1, 0b10, 0b1);
+    makeEntry(block, 0b11, 0b1, 0b01, 0b0);
     // hexdump("Block", block, 2 * sizeof(Sector));
     while (true) {
         fgets(line, sizeof line, stdin);

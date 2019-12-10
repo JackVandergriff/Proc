@@ -1,9 +1,2 @@
-/* #include "process.h"
+#include "process.hpp"
 
-void cuda_process(Node*);
-
-int main() {
-    printf("working!");
-    return 0;
-}
-*/
